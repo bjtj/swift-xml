@@ -1,8 +1,6 @@
 
 public enum TokenType {
-    case atomTag
-    case startTag
-    case endTag
+    case tag
     case text
 }
 
@@ -27,15 +25,7 @@ public class Tokenizer {
             if intag == true && char == ">" {
                 intag = false
                 str.append(char)
-                var nodeType = TokenType.startTag
-                if str.last == "/" {
-                    nodeType = .atomTag
-                    // str = String(str[str.startIndex..<str.index(str.endIndex, offsetBy: -1)])
-                } else if str.first == "/" {
-                    nodeType = .endTag
-                    // str = String(str[str.index(str.startIndex, offsetBy: 1)..<str.endIndex])
-                }         
-                tokens.append(Token(type: nodeType, text: str))
+                tokens.append(Token(type: .tag, text: str))
                 str = ""
                 continue
             }
@@ -44,4 +34,17 @@ public class Tokenizer {
         }
         return tokens
     }
+}
+
+
+func isStartTag(text: String) -> Bool {
+    return text.hasPrefix("</") == false && text.hasSuffix("/>") == false
+}
+
+func isEndTag(text: String) -> Bool {
+    return text.hasPrefix("</")
+}
+
+func isAtomTag(text: String) -> Bool {
+    return text.hasSuffix("/>")
 }

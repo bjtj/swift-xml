@@ -1,4 +1,5 @@
 public enum XmlNodeType {
+    case dtd
     case comment
     case element
     case text
@@ -53,6 +54,15 @@ public class XmlElement: XmlNode {
 }
 
 public class XmlText: XmlNode {
+    public init() {
+        super.init(type: .text)
+    }
+}
+
+public class XmlDTD: XmlNode {
+    public init() {
+        super.init(type: .dtd)
+    }
 }
 
 struct swift_xml {
@@ -65,22 +75,25 @@ public func parse(xmlString: String) {
     var cursor: XmlNode?
     for token in tokens {
         print("\(token.type): '\(token.text)'")
+
         switch token.type {
-        case .startTag:
-            let node = XmlNode(type: .element)
-            if cursor != nil {
-                cursor!.appendChild(node: node)
-            }
-            cursor = node
-        case .atomTag:
-            let node = XmlNode(type: .element)
-            if cursor == nil {
+        case .tag:
+            if isStartTag(text: token.text) {
+                let node = XmlNode(type: .element)
+                if cursor != nil {
+                    cursor!.appendChild(node: node)
+                }
                 cursor = node
-            } else {
-                cursor!.appendChild(node: node)
+            } else if isEndTag(text: token.text) {
+                cursor = cursor!.parent
+            } else if isAtomTag(text: token.text) {
+                let node = XmlNode(type: .element)
+                if cursor == nil {
+                    cursor = node
+                } else {
+                    cursor!.appendChild(node: node)
+                }                
             }
-        case .endTag:
-            cursor = cursor!.parent
         case .text:
             let node = XmlNode(type: .text)
             if cursor == nil {
