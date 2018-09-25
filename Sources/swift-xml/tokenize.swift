@@ -17,7 +17,9 @@ public class Tokenizer {
         for (_, char) in text.enumerated() {
             if intag == false && char == "<" {
                 intag = true
-                tokens.append(Token(type: .text, text: str))
+                if str.isEmpty == false {
+                    tokens.append(Token(type: .text, text: str))
+                }
                 str = "<"
                 continue
             }
