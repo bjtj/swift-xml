@@ -23,24 +23,24 @@ public class XmlDocument {
 }
 
 public class XmlNode {
-    var parent: XmlNode?
-    var type: XmlNodeType?
-    var children: [XmlNode]?
-    var namespace: String?
-    var name: String?
-    var value: String?
-    var text: String?
-    var attributes: [XmlAttribute]?
+    public var parent: XmlNode?
+    public var type: XmlNodeType?
+    public var children: [XmlNode]?
+    public var namespace: String?
+    public var name: String?
+    public var value: String?
+    public var text: String?
+    public var attributes: [XmlAttribute]?
 
     public var description: String {
         return name!
     }
 
-    init(type: XmlNodeType) {
+    public init(type: XmlNodeType) {
         self.type = type
     }
     
-    var elements: [XmlElement]? {
+    public var elements: [XmlElement]? {
         get {
             guard let children = children else {
                 return nil
@@ -48,7 +48,7 @@ public class XmlNode {
             return children.compactMap { $0.type == .element ? $0 as? XmlElement : nil }
         }
     }
-    var firstText: XmlText? {
+    public var firstText: XmlText? {
         guard let children = children else {
             return nil
         }
@@ -62,7 +62,7 @@ public class XmlNode {
         }
         return nil
     }
-    var isRoot: Bool {
+    public var isRoot: Bool {
         get {
             return parent == nil
         }
@@ -75,7 +75,7 @@ public class XmlNode {
         return attributes.map { $0.description }.joined(separator: " ")
     }
     
-    func hasAttribute(name: String) -> Bool {
+    public func hasAttribute(name: String) -> Bool {
         guard let attributes = attributes else {
             return false
         }
@@ -87,7 +87,7 @@ public class XmlNode {
         return false
     }
 
-    func getAttribute(name: String) -> XmlAttribute? {
+    public func getAttribute(name: String) -> XmlAttribute? {
         guard let attributes = attributes else {
             return nil
         }
@@ -99,7 +99,7 @@ public class XmlNode {
         return nil
     }
 
-    func getElement(name: String) -> XmlElement? {
+    public func getElement(name: String) -> XmlElement? {
         guard let elements = self.elements else {
             return nil
         }
@@ -111,7 +111,7 @@ public class XmlNode {
         return nil
     }
     
-    func appendChild(node: XmlNode) {
+    public func appendChild(node: XmlNode) {
         node.parent = self
         if children == nil {
             self.children = [XmlNode]()
