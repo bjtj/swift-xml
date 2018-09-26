@@ -1,5 +1,5 @@
 import XCTest
-@testable import swift_xml
+@testable import SwiftXml
 
 final class swift_xmlTests: XCTestCase {
     func testExample() {
