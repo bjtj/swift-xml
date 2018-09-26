@@ -66,7 +66,8 @@ final class swift_xmlTests: XCTestCase {
         for element in elements {
             print("\(element.name!) - \(element.firstText?.text ?? "nil")")
         }
-        
+
+        print("\(document.description)")
     }
 
     func testHtml() {

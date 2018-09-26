@@ -9,6 +9,17 @@ public enum XmlNodeType {
 public class XmlDocument {
     public var dtd: XmlDTD?
     public var rootElement: XmlElement?
+
+    public var description: String {
+        var str = ""
+        if let dtd = dtd {
+            str.append("\(dtd.description)\r\n")
+        }
+        if let rootElement = rootElement {
+            str.append("\(rootElement.description)")
+        }
+        return str
+    }
 }
 
 public class XmlNode {
@@ -55,6 +66,13 @@ public class XmlNode {
         get {
             return parent == nil
         }
+    }
+
+    var attributesString: String {
+        guard let attributes = attributes else {
+            return ""
+        }
+        return attributes.map { $0.description }.joined(separator: " ")
     }
     
     func hasAttribute(name: String) -> Bool {
@@ -103,7 +121,30 @@ public class XmlNode {
 }
 
 public class XmlElement: XmlNode {
-    public init(namespace: String? = nil, name: String?, attributes: [XmlAttribute]? = nil) {
+    override public var description: String {
+        var str = "<\(tagName)"
+        if attributes != nil && attributes!.isEmpty == false {
+            str.append(" ")
+            str.append(attributesString)
+        }
+        if children == nil || children!.isEmpty {
+            str.append(" />")
+            return str
+        }
+        str.append(">")
+        for child in children! {
+            str.append(child.description)
+        }
+        str.append("</\(tagName)>")
+        return str
+    }
+    var tagName: String {
+        if namespace != nil {
+            return "\(namespace!):\(name!)"
+        }
+        return "\(name!)"
+    }
+    public init(namespace: String? = nil, name: String, attributes: [XmlAttribute]? = nil) {
         super.init(type: .element)
         self.namespace = namespace
         self.name = name
@@ -112,6 +153,9 @@ public class XmlElement: XmlNode {
 }
 
 public class XmlText: XmlNode {
+    override public var description: String {
+        return escapeXml(text: text!)
+    }
     public init(text: String) {
         super.init(type: .text)
         self.text = text
@@ -120,7 +164,7 @@ public class XmlText: XmlNode {
 
 public class XmlAttribute: XmlNode {
     override public var description: String {
-        return "\(name!): \(value!)"
+        return "\(name!)=\"\(value!)\""
     }
     public init(name: String, value: String = "") {
         super.init(type: .attribute)
@@ -130,7 +174,13 @@ public class XmlAttribute: XmlNode {
 }
 
 public class XmlDTD: XmlNode {
-    public init(name: String, attributes: [XmlAttribute]?) {
+    override public var description: String {
+        if attributesString.isEmpty {
+            return "<?\(name!) ?>"
+        }
+        return "<?\(name!) \(attributesString)?>"
+    }
+    public init(name: String = "xml", attributes: [XmlAttribute]? = nil) {
         super.init(type: .dtd)
         self.name = name
         self.attributes = attributes
