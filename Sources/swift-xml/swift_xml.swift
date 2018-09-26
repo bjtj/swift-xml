@@ -20,6 +20,9 @@ public class XmlDocument {
         }
         return str
     }
+
+    public init() {
+    }
 }
 
 public class XmlNode {
