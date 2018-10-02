@@ -38,7 +38,7 @@ public func parseXml(xmlString: String) -> XmlDocument {
                 }
                 cursor = cursor!.parent
             } else if isAtomTag(text: token.text) {
-                let node = XmlNode(type: .element)
+                let node = parseTag(text: unwrapTag(text: token.text))
                 if cursor == nil {
                     cursor = node
                 } else {

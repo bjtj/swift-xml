@@ -10,8 +10,7 @@ final class swift_xmlTests: XCTestCase {
     }
 
     func testXmlDocument() {
-        let xml = "<?xml version=\"1.0\"?>" +
-"<root xmlns=\"urn:schemas-upnp-org:device-1-0\">" +
+        let xml = "<root xmlns=\"urn:schemas-upnp-org:device-1-0\">" +
 "  <specVersion>" +
 "  <major>1</major>" +
 "  <minor>0</minor>" +
@@ -45,8 +44,9 @@ final class swift_xmlTests: XCTestCase {
 "  </serviceList>" +
 "  </device>" +
 "</root>"
+        // let document = parseXml(xmlString: "<?xml version=\"1.0\"?>" + xml)
         let document = parseXml(xmlString: xml)
-        XCTAssertEqual(document.dtd!.name, "xml")
+        // XCTAssertEqual(document.dtd!.name, "xml")
         XCTAssertEqual(document.rootElement!.name, "root")
 
         guard let root = document.rootElement else {
@@ -86,10 +86,38 @@ final class swift_xmlTests: XCTestCase {
         XCTAssertEqual("a2", node.attributes![1].value)
     }
 
+    func testParseXml() {
+        let xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" +
+          "<s:Envelope s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><u:GetLoadLevelTarget xmlns:u=\"urn:schemas-upnp-org:service:SwitchPower:1\" /></s:Body></s:Envelope>"
+        let document = parseXml(xmlString: xml)
+        guard let rootElement = document.rootElement else {
+            XCTAssert(false)
+            return
+        }
+
+        XCTAssertEqual(rootElement.name, "Envelope")
+        XCTAssertEqual(rootElement.elements?.count, 1)
+        XCTAssertEqual(rootElement.elements?[0].name, "Body")
+
+        guard let elements = rootElement.elements![0].elements else {
+            XCTAssert(false)
+            return
+        }
+
+        XCTAssertEqual(elements.count, 1)
+        XCTAssertEqual(elements[0].name, "GetLoadLevelTarget")
+        guard let attribute = elements[0].getAttribute(name: "xmlns:u") else {
+            XCTAssert(false)
+            return
+        }
+        XCTAssertEqual(attribute.value, "urn:schemas-upnp-org:service:SwitchPower:1")
+    }
+
     static var allTests = [
       ("testExample", testExample),
       ("testXmlDocument", testXmlDocument),
       ("testHtml", testHtml),
       ("testParseTag", testParseTag),
+      ("testParseXml", testParseXml),
     ]
 }
