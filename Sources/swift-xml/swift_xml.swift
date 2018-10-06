@@ -35,6 +35,13 @@ public class XmlNode {
     public var text: String?
     public var attributes: [XmlAttribute]?
 
+    public var literalValue: String {
+        guard let value = value else {
+            return ""
+        }
+        return value
+    }
+
     public var description: String {
         return name!
     }
